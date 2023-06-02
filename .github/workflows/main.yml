@@ -1,0 +1,52 @@
+name: build & deploy lambda docker image to ECR
+
+#on: [push]
+on:
+  repository_dispatch:
+    types: [test-event]
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: read
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-2
+      - name: Copy from s3
+        run: |
+          aws s3 cp s3://jaslkaur-zipped-image-s3-ec2-ecr/s3_small.zip .
+          unzip s3_small.zip
+          ls
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_DEFAULT_REGION: 'us-east-2'
+      - name: Create a repo in us-east-2
+        run: |
+          aws ecr create-repository --region $REGION1 --repository-name $ECR_REPO_NAME
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          REGION1: 'us-east-2'
+          ECR_REPO_NAME: ecr-repo
+      - name: Import, tag, push image to Amazon
+        id: build-image
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          ECR_REPO_NAME: ecr-repo
+          IMAGE_TAG: latest
+          REGION1: us-east-2
+          DOCKER_IMAGE: "hello-world-image"
+          TAR_GZ: "hello-world-image-small.tar.gz"
+        run: |
+          docker image import $TAR_GZ hello-world-image:latest
+          docker tag $DOCKER_IMAGE:latest $ACCOUNT_ID.dkr.ecr.us-east-2.amazonaws.com/$ECR_REPO_NAME:latest
+          docker push $ACCOUNT_ID.dkr.ecr.$REGION.amazonaws.com/$ECR_REPO_NAME:latest
