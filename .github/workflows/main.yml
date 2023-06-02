@@ -48,7 +48,7 @@ jobs:
           IMAGE_TAG: latest
           REGION1: us-east-2
           DOCKER_IMAGE: "hello-world-image"
-          TAR_GZ: "hello-world-image-small.tar.gz"
+          TAR_GZ: "hello-world-image-medium.tar.gz"
         run: |
           docker image import $TAR_GZ hello-world-image:latest
           docker images
