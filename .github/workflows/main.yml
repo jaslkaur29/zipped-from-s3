@@ -46,6 +46,7 @@ jobs:
           REGION1: us-east-2
           DOCKER_IMAGE: "hello-world-image"
           TAR_GZ: "hello-world-image-small.tar.gz"
+          ACCOUNT_ID: "294896388710"
         run: |
           docker image import $TAR_GZ hello-world-image:latest
           docker tag $DOCKER_IMAGE:latest $ACCOUNT_ID.dkr.ecr.us-east-2.amazonaws.com/$ECR_REPO_NAME:latest
