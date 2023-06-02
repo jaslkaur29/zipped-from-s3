@@ -48,5 +48,6 @@ jobs:
           TAR_GZ: "hello-world-image-small.tar.gz"
         run: |
           docker image import $TAR_GZ hello-world-image:latest
+          docker images
           docker tag $DOCKER_IMAGE:latest 294896388710.dkr.ecr.us-east-2.amazonaws.com/$ECR_REPO_NAME:latest
           docker push 294896388710.dkr.ecr.$REGION.amazonaws.com/$ECR_REPO_NAME:latest
