@@ -22,8 +22,8 @@ jobs:
           aws-region: us-east-2
       - name: Copy from s3
         run: |
-          aws s3 cp s3://jaslkaur-zipped-image-s3-ec2-ecr/s3_small.zip .
-          unzip s3_small.zip
+          aws s3 cp s3://jaslkaur-zipped-image-s3-ec2-ecr/s3_medium.zip .
+          unzip s3_medium.zip
           ls
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
